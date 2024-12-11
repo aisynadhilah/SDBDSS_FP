@@ -236,7 +236,9 @@ if menu == "Data Preparation":
 
 elif menu == "Feature Selection":
     st.write("### Feature Selection")
-    if st.session_state.filtered_data is None:
+    if st.session_state.data is None:
+        data = st.session_state.data 
+        filtered_data = data[data['class'].isin([0, 3])]
         filtered_data = st.session_state.filtered_data
 
         # Drop kolom file_name
