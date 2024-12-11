@@ -581,12 +581,12 @@ elif menu == "Classification":
             testing_data = st.session_state.testing_data
 
             # Memisahkan fitur (X) dan label (y) untuk data latih
-            x_train = training_data[:, :-1]  # Semua kolom kecuali kolom terakhir
-            y_train = training_data[:, -1]   # Kolom terakhir sebagai label
+            x_train = training_data.iloc[:, :-1]   # Semua kolom kecuali kolom terakhir
+            y_train = training_data.iloc[:, -1]    # Kolom terakhir sebagai label
 
             # Memisahkan fitur (X) dan label (y) untuk data uji
-            x_test = testing_data[:, :-1]    # Semua kolom kecuali kolom terakhir
-            y_test = testing_data[:, -1]     # Kolom terakhir sebagai label
+            x_test = testing_data.iloc[:, :-1]    # Semua kolom kecuali kolom terakhir
+            y_test = testing_data.iloc[:, -1]     # Kolom terakhir sebagai label
 
             # Kolom yang ingin dinormalisasi adalah kolom pertama hingga ke-5 (kolom terakhir adalah 'class')
             features_to_standardize = ['objects HM', 'min axis EX', 'contrast HM', 'perimeter EX', 'maj axis EX']
