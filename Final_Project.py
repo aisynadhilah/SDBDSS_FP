@@ -8,6 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+from sklearn.utils import resample
 
 st.title("Final Project SDBDSS")
 st.write("Rihhadatul Aisy Nadhilah")
