@@ -13,16 +13,38 @@ st.title("Final Project SDBDSS")
 st.write("Rihhadatul Aisy Nadhilah")
 st.write("5023211020")
 
+# Fungsi untuk plot distribusi data dengan cache
+@st.cache_data
+def plot_distribution(data):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.countplot(x='class', data=data, palette='viridis', ax=ax)
+    ax.set_title('Distribusi Data Kelas')
+    ax.set_xlabel('Kelas')
+    ax.set_ylabel('Jumlah Data')
+    return fig
+
 # Sidebar menu untuk navigasi
 menu = st.sidebar.radio("Menu", ["Data Preparation", "Feature Selection", "Down Sampling", "Split Data", "Classification"])
-# Load data
-data_file = st.file_uploader("Upload file Excel", type=["xlsx"])
+
+# Inisialisasi session state untuk menyimpan data
+if "data" not in st.session_state:
+    st.session_state.data = None
+if "filtered_data" not in st.session_state:
+    st.session_state.filtered_data = None
+if "data_copy" not in st.session_state:
+    st.session_state.data_copy = None
+if "data_fix" not in st.session_state:
+    st.session_state.data_fix = None
+
 
 if menu == "Data Preparation":
     st.write("Data Preparation")
+    # Load data
+    data_file = st.file_uploader("Upload file Excel", type=["xlsx"])
 
     if data_file is not None:
         data = pd.read_excel(data_file)
+        st.session_state.data = data
                 
         # Tampilkan data
         st.write("### Data yang diunggah:")
@@ -45,23 +67,21 @@ if menu == "Data Preparation":
 
         # Distribusi kelas
         st.write("### Distribusi Kelas:")
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.countplot(x='class', data=data, palette='viridis', ax=ax)
-        ax.set_title('Distribusi Data Kelas')
-        ax.set_xlabel('Kelas')
-        ax.set_ylabel('Jumlah Data')
-        st.pyplot(fig)
+        st.pyplot(plot_distribution(data))
 
         # Filter data hanya untuk kelas 0 dan 3
         st.write("### Filter Data untuk Kelas 0 dan 3:")
         filtered_data = data[data['class'].isin([0, 3])]
+        st.session_state.filtered_data = filtered_data
         st.dataframe(filtered_data)
 
 elif menu == "Feature Selection":
     st.write("Anda berada di menu Feature Selection")
-    if 'filtered_data' in locals():
+    if st.session_state.filtered_data is None:
+        filtered_data = st.session_state.filtered_data
+
         # Drop kolom file_name
-        filtered_data = filtered_data.drop(columns=['file_name'])
+        filtered_data = filtered_data.drop(columns=['file_name']) 
 
         # Plot menggunakan Seaborn
         st.write("### Visualisasi Distribusi Fitur")
@@ -80,7 +100,8 @@ elif menu == "Feature Selection":
 
         # Hitung korelasi data
         st.write("### Korelasi Data")
-        data_copy = filtered_data.replace(to_replace=['0', '3'], value=[0, 1], inplace=False)
+        data_copy = filtered_data.copy()
+        data_copy['class'] = data_copy['class'].replace({0: 0, 3: 1})
         corr_data = data_copy.corr()
         st.write(corr_data)
 
@@ -102,9 +123,7 @@ elif menu == "Feature Selection":
         diagnosis = data_copy['class']
         data_copy = data_copy[list(strong_relation_features.to_dict().keys())]
         data_copy['class'] = diagnosis
-
-        st.write("### Data dengan Fitur Signifikan:")
-        st.dataframe(data_copy)
+        st.session_state.data_copy = data_copy
 
         # Heatmap ulang untuk fitur signifikan
         st.write("### Heatmap Korelasi Fitur Signifikan")
@@ -114,13 +133,18 @@ elif menu == "Feature Selection":
             f, ax = plt.subplots(figsize=(10, 7))
             sns.heatmap(data=data_copy.corr(), vmin=0, vmax=1, mask=mask, square=True, annot=True, ax=ax)
             st.pyplot(f)
+
+        st.write("### Data dengan Fitur Signifikan:")
+        st.dataframe(data_copy)
     else:
         st.write("Data belum tersedia. Silakan upload data di menu Data Preparation.")
 
 
 elif menu == "Down Sampling":
     st.write("Anda berada di menu Down Sampling")
-    if 'data_copy' in locals():
+    if st.session_state.data_copy is not None:
+        data_copy = st.session_state.data_copy
+
         # Pisahkan data berdasarkan kelas
         class_0 = data_copy[data_copy['class'] == 0]
         class_3 = data_copy[data_copy['class'] == 1]
@@ -141,7 +165,8 @@ elif menu == "Down Sampling":
 
         # Acak urutan data
         data_fix = data_fix.sample(frac=1, random_state=42).reset_index(drop=True)
-
+        st.session_state.data_fix = data_fix
+        
         # Tampilkan hasil
         st.write("### Data setelah Down Sampling:")
         st.dataframe(data_fix)
@@ -151,14 +176,16 @@ elif menu == "Down Sampling":
         st.write("Kelas 1:", data_fix[data_fix['class'] == 1].shape[0])
 
         # Pisahkan fitur dan target
-        x = data_fix.drop('class', axis=1)  # Fitur
-        y = data_fix['class']               # Kelas target
+        #x = data_fix.drop('class', axis=1)  # Fitur
+        #y = data_fix['class']               # Kelas target
     else:
         st.write("Data belum tersedia. Silakan lakukan Feature Selection terlebih dahulu.")
 
 elif menu == "Split Data":
     st.write("Anda berada di menu Split Data")
-    if 'data_fix' in locals():
+    if st.session_state.data_fix is not None:
+        data_fix = st.session_state.data_fix
+
         # Pisahkan data berdasarkan kelas
         class0_data = data_fix[data_fix['class'] == 0]
         class3_data = data_fix[data_fix['class'] == 1]
