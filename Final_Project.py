@@ -523,7 +523,7 @@ elif menu == "Classification":
 
             # Classification report
             st.write("### Classification Report:")
-            st.text(classification_report(y_test, y_pred_bayes))
+            st.dataframe(pd.DataFrame(classification_report(y_test, y_pred_bayes,output_dict=True)).transpose())
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
 
