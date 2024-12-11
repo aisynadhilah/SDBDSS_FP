@@ -387,7 +387,7 @@ elif menu == "Classification":
 
     if sub_menu == "BAYESIAN":
         st.write("### **Bayesian**")
-        if st.session_state.training_data and st.session_state.testing_data:
+        if st.session_state.training_data is not None and st.session_state.testing_data is not None:
             training_data = st.session_state.training_data
             testing_data = st.session_state.testing_data
             x_train = training_data.drop('class', axis=1).to_numpy()  # Fitur
@@ -525,7 +525,7 @@ elif menu == "Classification":
 
     elif sub_menu == "NAIVE BAYES":
         st.write("### **Naive Bayes**")
-        if st.session_state.training_data and st.session_state.testing_data:
+        if st.session_state.training_data is not None and st.session_state.testing_data is not None:
             training_data = st.session_state.training_data
             testing_data = st.session_state.testing_data
 
@@ -572,7 +572,7 @@ elif menu == "Classification":
 
     elif sub_menu == "LOGISTIC REGRESSION":
         st.write("### **Logistic Regression**")
-        if st.session_state.training_data and st.session_state.testing_data:
+        if st.session_state.training_data is not None and st.session_state.testing_data is not None:
             training_data = st.session_state.training_data
             testing_data = st.session_state.testing_data
 
@@ -627,7 +627,7 @@ elif menu == "Classification":
             
     elif sub_menu == "DECISION TREE":
         st.write("### **Decision Tree**")
-        if st.session_state.training_data and st.session_state.testing_data:
+        if st.session_state.training_data is not None and st.session_state.testing_data is not None:
             training_data = st.session_state.training_data
             testing_data = st.session_state.testing_data
 
