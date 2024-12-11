@@ -570,7 +570,7 @@ elif menu == "Classification":
             st.dataframe(pd.DataFrame(conf_matrix_nb, index=[0, 1], columns=[0, 1]))
             st.write(f"### Akurasi: {accuracy_nb:.2f}%")
             st.write("### Classification Report:")
-            st.text(classification_report(y_true_nb, predicted_classes_nb))
+            st.dataframe(pd.DataFrame(classification_report(y_true_nb, predicted_classes_nb,output_dict=True)).transpose())
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
 
@@ -625,7 +625,7 @@ elif menu == "Classification":
             st.dataframe(cm_df)
             st.write(f"### Akurasi: {accuracy_lr:.2f}%")
             st.write("### Classification Report:")
-            st.text(classification_report(y_test.astype(int), predictions_lr))
+            st.dataframe(pd.DataFrame(classification_report(y_test.astype(int), predictions_lr,output_dict=True)).transpose())
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
             
@@ -663,7 +663,7 @@ elif menu == "Classification":
             st.dataframe(cm_dt)
             st.write(f"### Akurasi: {accuracy_dt*100:.2f}%")
             st.write("### Classification Report:")
-            st.text(classification_report(y_test.astype(int), predictions_dt))
+            st.dataframe(pd.DataFrame(classification_report(y_test.astype(int), predictions_dt,output_dict=True)).transpose())
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
   
