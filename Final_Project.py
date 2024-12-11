@@ -657,11 +657,11 @@ elif menu == "Classification":
 
             # Evaluate the model
             cm_dt = confusion_matrix(y_test, predictions_dt)
-            accuracy_dt = accuracy(y_test, predictions_dt)
+            accuracy_dt = accuracy_score(y_test, predictions_dt)
             
             st.write("### Confusion Matrix:")
             st.dataframe(cm_dt)
-            st.write(f"### Akurasi: {accuracy_dt:.2f}%")
+            st.write(f"### Akurasi: {accuracy_dt*100:.2f}%")
             st.write("### Classification Report:")
             st.text(classification_report(y_test.astype(int), predictions_dt))
         else:
