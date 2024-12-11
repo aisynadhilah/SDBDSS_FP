@@ -363,6 +363,10 @@ elif menu == "Split Data":
         training_data.loc[training_data['class'] == 3, 'class'] = 1
         testing_data.loc[testing_data['class'] == 3, 'class'] = 1
 
+        # Simpan ke session state
+        st.session_state.training_data = training_data
+        st.session_state.testing_data = testing_data
+
         # Tampilkan hasil
         st.write("### Data Training:")
         st.dataframe(training_data)
