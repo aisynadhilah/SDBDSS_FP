@@ -23,6 +23,10 @@ from LR import LogisticRegression
 from DT import DecisionTree
 from collections import defaultdict
 from scipy.stats import norm
+from sklearn.covariance import ShrunkCovariance
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from scipy.stats import multivariate_normal
 
 
 st.title("Final Project SDBDSS")
@@ -577,19 +581,26 @@ elif menu == "Classification":
             training_data_np = training_data.to_numpy()
             testing_data_np = testing_data.to_numpy()
 
-            # Indeks fitur
-            features = list(range(training_data_np.shape[1] - 1))  # Semua kecuali kolom terakhir
-            class_column = -1  # Kolom terakhir sebagai class label
+            # Normalisasi data
+            scaler = StandardScaler()
+            training_data_np[:, :-1] = scaler.fit_transform(training_data_np[:, :-1])
+            testing_data_np[:, :-1] = scaler.transform(testing_data_np[:, :-1])
+
+            # Fungsi untuk regularisasi matriks kovarian
+            def compute_shrinkage_cov_matrix(data):
+                sc = ShrunkCovariance(shrinkage=0.1)
+                sc.fit(data)
+                return sc.covariance_
 
             # Data untuk kelas 0
-            class_0_data = training_data_np[training_data_np[:, class_column] == 0][:, features]
+            class_0_data = training_data_np[training_data_np[:, -1] == 0][:, :-1]
             mu_0 = class_0_data.mean(axis=0)
-            sigma_0 = np.cov(class_0_data, rowvar=False)
+            sigma_0 = compute_shrinkage_cov_matrix(class_0_data)
 
             # Data untuk kelas 1
-            class_1_data = training_data_np[training_data_np[:, class_column] == 1][:, features]
+            class_1_data = training_data_np[training_data_np[:, -1] == 1][:, :-1]
             mu_1 = class_1_data.mean(axis=0)
-            sigma_1 = np.cov(class_1_data, rowvar=False)
+            sigma_1 = compute_shrinkage_cov_matrix(class_1_data)
 
             def predict_classes(data):
                 p_xi_on_class1 = s.multivariate_normal.pdf(data, mu_1, sigma_1)
@@ -597,7 +608,8 @@ elif menu == "Classification":
                 p_class1_on_xi = p_xi_on_class1 / (p_xi_on_class0 + p_xi_on_class1)
                 return p_class1_on_xi > 0.5
 
-            features_data = testing_data_np[:, 0:6]  # 6 fitur
+            # Data prediksi
+            features_data = testing_data_np[:, :-1]
             predicted_classes_nb = predict_classes(features_data)
 
             # Evaluasi
