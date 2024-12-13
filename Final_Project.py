@@ -9,6 +9,7 @@ from matplotlib import cm
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.utils import resample
+from sklearn.metrics import roc_curve, auc
 from celluloid import Camera
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
@@ -46,7 +47,6 @@ def predict_classes_naive(data):
     
     return p_class1_on_xi > 0.5
 
-import numpy as np
 
 class DecisionTreeClassifier:
     def __init__(self, max_depth=None):
@@ -188,6 +188,40 @@ class DecisionTreeClassifier:
         y_pred = self.predict(X_test)
         return np.mean(y_pred == y_test)
 
+def calculate_roc_curve(true_labels, predicted_probabilities):
+    """
+    Calculate and plot ROC curve
+    
+    Parameters:
+    - true_labels: Array of actual class labels
+    - predicted_probabilities: Array of predicted probabilities for positive class
+    """
+    # Calculate false positive rate, true positive rate, and thresholds
+    fpr, tpr, thresholds = roc_curve(true_labels, predicted_probabilities)
+    
+    # Calculate AUC
+    roc_auc = auc(fpr, tpr)
+    
+    # Plot ROC curve
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, 
+             label=f'ROC curve (AUC = {roc_auc:.2f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.grid(True)
+    plt.show()
+    
+    return {
+        'fpr': fpr,
+        'tpr': tpr,
+        'thresholds': thresholds,
+        'auc': roc_auc
+    }
 
 # Sidebar menu untuk navigasi
 menu = st.sidebar.radio("Menu", ["Data Preparation", "Feature Selection", "Down Sampling", "Split Data", "Classification"])
@@ -261,8 +295,8 @@ elif menu == "Feature Selection":
         st.write("### Korelasi Data")
         data_copy = filtered_data.copy()
         data_copy['class'] = data_copy['class'].replace({0: 0, 3: 1})
-        corr_data = data_copy.corr()
-        st.write(corr_data)
+        corr_data = abs(data_copy.corr())
+        st.dataframe(corr_data)
 
         # Heatmap
         st.write("### Heatmap Korelasi")
@@ -286,11 +320,13 @@ elif menu == "Feature Selection":
 
         # Heatmap ulang untuk fitur signifikan
         st.write("### Heatmap Korelasi Fitur Signifikan")
-        mask = np.zeros_like(data_copy.corr())
+        corr_data2 = abs(data_copy.corr())
+        corr_data2
+        mask = np.zeros_like(abs(corr_data2))
         mask[np.triu_indices_from(mask)] = True
         with sns.axes_style("white"):
             f, ax = plt.subplots(figsize=(10, 7))
-            sns.heatmap(data=data_copy.corr(), vmin=0, vmax=1, mask=mask, square=True, annot=True, ax=ax)
+            sns.heatmap(data=abs(data_copy.corr()), vmin=0, vmax=1, mask=mask, square=True, annot=True, ax=ax)
             st.pyplot(f)
 
         st.write("### Data dengan Fitur Signifikan:")
@@ -524,6 +560,10 @@ elif menu == "Classification":
             # Classification report
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_test, y_pred_bayes,output_dict=True)).transpose())
+
+            # Calculate ROC curve
+            roc_results_bayes = calculate_roc_curve(y_test, y_pred_bayes)
+            st.write("### AUC Score:", roc_results_bayes['auc'])
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
 
@@ -571,6 +611,10 @@ elif menu == "Classification":
             st.write(f"### Akurasi: {accuracy_nb:.2f}%")
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_true_nb, predicted_classes_nb,output_dict=True)).transpose())
+
+            # Calculate ROC curve
+            roc_results_naive = calculate_roc_curve(y_true_nb, predicted_classes_nb)
+            st.write("### AUC Score:", roc_results_naive['auc'])
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
 
@@ -626,6 +670,10 @@ elif menu == "Classification":
             st.write(f"### Akurasi: {accuracy_lr:.2f}%")
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_test.astype(int), predictions_lr,output_dict=True)).transpose())
+
+            # Calculate ROC curve
+            roc_results_LR = calculate_roc_curve(y_test.astype(int), predictions_lr)
+            st.write("### AUC Score:", roc_results_LR['auc'])
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
             
@@ -664,6 +712,11 @@ elif menu == "Classification":
             st.write(f"### Akurasi: {accuracy_dt*100:.2f}%")
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_test.astype(int), predictions_dt,output_dict=True)).transpose())
+
+            # Calculate ROC curve
+            roc_results_DT = calculate_roc_curve(y_test.astype(int), predictions_dt)
+            st.write("### AUC Score:", roc_results_DT['auc'])
+
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
   
