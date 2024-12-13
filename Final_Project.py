@@ -208,9 +208,9 @@ def calculate_roc_curve(true_labels, predicted_probabilities):
     
     # Plot ROC curve
     plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color='darkorange', lw=2, 
+    plt.plot(fpr, tpr, color='navy', lw=2, 
              label=f'ROC curve (AUC = {roc_auc:.2f})')
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.plot([0, 1], [0, 1], color='red', lw=2, linestyle='--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
@@ -219,6 +219,8 @@ def calculate_roc_curve(true_labels, predicted_probabilities):
     plt.legend(loc="lower right")
     plt.grid(True)
     plt.show()
+
+    st.pyplot(plt)
     
     return {
         'fpr': fpr,
@@ -567,7 +569,8 @@ elif menu == "Classification":
 
             # Calculate ROC curve
             roc_results_bayes = calculate_roc_curve(y_test, y_pred_bayes)
-            st.write("### AUC Score:", roc_results_bayes['auc'])
+            
+            st.write(f"AUC Score: {roc_results_bayes['auc']:.2f}")
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
 
@@ -626,7 +629,7 @@ elif menu == "Classification":
 
             # Calculate ROC curve
             roc_results_naive = calculate_roc_curve(y_true_nb, predicted_classes_nb)
-            st.write("### AUC Score:", roc_results_naive['auc'])
+            st.write(f"AUC Score: {roc_results_naive['auc']:.2f}")
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
 
@@ -685,7 +688,7 @@ elif menu == "Classification":
 
             # Calculate ROC curve
             roc_results_LR = calculate_roc_curve(y_test.astype(int), predictions_lr)
-            st.write("### AUC Score:", roc_results_LR['auc'])
+            st.write(f"AUC Score: {roc_results_LR['auc']:.2f}")
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
             
@@ -727,8 +730,7 @@ elif menu == "Classification":
 
             # Calculate ROC curve
             roc_results_DT = calculate_roc_curve(y_test.astype(int), predictions_dt)
-            st.write("### AUC Score:", roc_results_DT['auc'])
-
+            st.write(f"AUC Score: {roc_results_DT['auc']:.2f}")
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
   
