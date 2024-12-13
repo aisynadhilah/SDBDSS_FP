@@ -567,9 +567,9 @@ elif menu == "Classification":
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_test, y_pred_bayes,output_dict=True)).transpose())
 
+            st.write("### ROC Curve:")
             # Calculate ROC curve
             roc_results_bayes = calculate_roc_curve(y_test, y_pred_bayes)
-            
             st.write(f"AUC Score: {roc_results_bayes['auc']:.2f}")
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
@@ -627,6 +627,7 @@ elif menu == "Classification":
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_true_nb, predicted_classes_nb,output_dict=True)).transpose())
 
+            st.write("### ROC Curve:")
             # Calculate ROC curve
             roc_results_naive = calculate_roc_curve(y_true_nb, predicted_classes_nb)
             st.write(f"AUC Score: {roc_results_naive['auc']:.2f}")
@@ -686,6 +687,7 @@ elif menu == "Classification":
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_test.astype(int), predictions_lr,output_dict=True)).transpose())
 
+            st.write("### ROC Curve:")
             # Calculate ROC curve
             roc_results_LR = calculate_roc_curve(y_test.astype(int), predictions_lr)
             st.write(f"AUC Score: {roc_results_LR['auc']:.2f}")
@@ -728,6 +730,7 @@ elif menu == "Classification":
             st.write("### Classification Report:")
             st.dataframe(pd.DataFrame(classification_report(y_test.astype(int), predictions_dt,output_dict=True)).transpose())
 
+            st.write("### ROC Curve:")
             # Calculate ROC curve
             roc_results_DT = calculate_roc_curve(y_test.astype(int), predictions_dt)
             st.write(f"AUC Score: {roc_results_DT['auc']:.2f}")
