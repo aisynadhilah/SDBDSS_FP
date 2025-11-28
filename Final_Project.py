@@ -33,8 +33,6 @@ st.title("Final Project SDBDSS")
 st.write("Rihhadatul Aisy Nadhilah")
 st.write("5023211020")
 
-st.markdown("[📥 Download Data di sini](https://bit.ly/Data_FeatureExtraction)")
-
 # Fungsi untuk plot distribusi data dengan cache
 @st.cache_data
 def plot_distribution(data):
@@ -251,6 +249,7 @@ if "testing_data" not in st.session_state:
 
 if menu == "Data Preparation":
     st.write("### Data Preparation")
+    st.markdown("[📥 Download Data di sini](https://bit.ly/Data_FeatureExtraction)")
     # Load data
     data_file = st.file_uploader("Upload file Excel", type=["xlsx"])
 
@@ -739,4 +738,5 @@ elif menu == "Classification":
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
   
+
 
