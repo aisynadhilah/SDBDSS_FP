@@ -33,6 +33,8 @@ st.title("Final Project SDBDSS")
 st.write("Rihhadatul Aisy Nadhilah")
 st.write("5023211020")
 
+st.markdown("[📥 Download Data di sini](https://bit.ly/Data_FeatureExtraction)")
+
 # Fungsi untuk plot distribusi data dengan cache
 @st.cache_data
 def plot_distribution(data):
@@ -737,3 +739,4 @@ elif menu == "Classification":
         else:
             st.write("Data untuk training dan testing belum tersedia. Silakan lakukan Split Data terlebih dahulu.")
   
+
